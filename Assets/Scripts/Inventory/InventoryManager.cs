@@ -51,33 +51,81 @@ public class InventoryManager : MonoBehaviour
 
     #endregion
 
+    public Key key;
+
     public void UseItem(ItemData data)
     {
-        // TODO
-        // If the item is a consumable, simply add the attributes of the item to the player.
-        // If it is equippable, get the equipment slot that matches the item's slot.
-        // Set the equipment slot's item as that of the used item
+        if(data.type == ItemType.Consumable)
+        {
+            Debug.Log("used consumable");
+            player.AddAttributes(data.attributes);
+        }
+
+        if (data.type == ItemType.Equipabble)
+        {
+            Debug.Log("equipped something");
+            equipmentSlots[GetEquipmentSlot(data.slotType)].SetItem(data);
+            player.AddAttributes(data.attributes);
+        }
+
+        if(data.type == ItemType.Key)
+        {
+            Debug.Log("Opened the door");
+            key.OpenDoor();
+        }
     }
 
    
     public void AddItem(string itemID)
     {
-        //TODO
-        //1. Cycle through every item in the database until you find the item with the same id.
-        //2. Get the index of the InventorySlot that does not have any Item and set its Item to the Item found
+        Debug.Log(itemID);
+        int putHere = -1;
+        int freeSlot = GetEmptyInventorySlot();
+
+        for (int i = 0; i < itemDatabase.Count; i++)
+        {
+            if (itemDatabase[i].id == itemID)
+            {
+                putHere = i;
+                break;
+            }
+        }
+
+        inventorySlots[freeSlot].SetItem(itemDatabase[putHere]);
     }
 
     public int GetEmptyInventorySlot()
     {
-        //TODO
-        //Check which inventory slot doesn't have an Item and return its index
-        return -1;
+        int freeSlot = -1;
+
+        for (int i = 0; i < inventorySlots.Count; i++)
+        {
+            if (!inventorySlots[i].HasItem())
+            {
+                freeSlot = i;
+                break;
+            }
+        }
+
+        return freeSlot;
     }
 
     public int GetEquipmentSlot(EquipmentSlotType type)
     {
-        //TODO
-        //Check which equipment slot matches the slot type and return its index
-        return -1;
+        int equippableSlot = -1;
+
+        for (int i = 0; i < equipmentSlots.Count; i++)
+        {
+            if (equipmentSlots[i].type == type)
+            {
+                if (!equipmentSlots[i].HasItem())
+                {
+                    equippableSlot = i;
+                    break;
+                }
+            }
+        }
+
+        return equippableSlot;
     }
 }

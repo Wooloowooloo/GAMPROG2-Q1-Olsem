@@ -5,10 +5,13 @@ using UnityEngine;
 public class CharacterControllerMovement : MonoBehaviour
 {
     [SerializeField]
-    private float moveSpeed = 2.0f;
+    private float moveSpeed = 3.0f;
     [SerializeField]
     private float gravityScale = 1.0f;
+    [SerializeField]
+    private float jumpHeight = 5.0f;
 
+    private Vector3 playerVelocity;
     private float gravity = -9.8f;
 
     private CharacterController characterController;
@@ -20,7 +23,19 @@ public class CharacterControllerMovement : MonoBehaviour
 
     private void Update()
     {
+        playerVelocity.y += gravity * Time.deltaTime;
+
         Move();
+
+        if (characterController.isGrounded)
+        {
+            Jump();
+
+            if (playerVelocity.y < 0)
+            {
+                playerVelocity.y = -2.0f;
+            }
+        }
     }
 
     private void Move()
@@ -28,11 +43,23 @@ public class CharacterControllerMovement : MonoBehaviour
        float xMove = Input.GetAxis("Horizontal");
        float zMove = Input.GetAxis("Vertical");
 
-        Vector3 moveDirection = (transform.right * xMove) + (transform.forward * zMove);
+        /*Vector3 moveDirection = (transform.right * xMove) + (transform.forward * zMove);
         moveDirection.y += gravity * Time.deltaTime * gravityScale;
         moveDirection *= moveSpeed * Time.deltaTime;
        
-        //Debug.Log(moveDirection);
-        characterController.Move(moveDirection);
+        Debug.Log(moveDirection);
+        characterController.Move(moveDirection);*/
+
+        Vector3 moveDirection = new(xMove, gravity * Time.deltaTime, zMove);
+
+        characterController.Move(transform.TransformDirection(moveDirection) * moveSpeed * Time.deltaTime);
+    }
+
+    private void Jump()
+    {
+        if (Input.GetKeyDown(KeyCode.Space))
+        {
+            playerVelocity.y *= jumpHeight;
+        }
     }
 }

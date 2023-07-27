@@ -1,6 +1,7 @@
 using System.Collections;
 using System.Collections.Generic;
 using UnityEngine;
+using UnityEngine.EventSystems;
 using UnityEngine.UI;
 
 public class InventorySlot : MonoBehaviour
@@ -10,15 +11,23 @@ public class InventorySlot : MonoBehaviour
 
     public void SetItem(ItemData data)
     {
-        // TODO
-        // Set the item data the and icons here
+        itemData = data;
+        itemIcon.sprite = data.icon;
+        itemIcon.enabled = true;
     }
 
     public void UseItem()
     {
-        InventoryManager.Instance.UseItem(itemData);
-        // TODO
-        // Reset the item data and the icons here
+        if (itemData.type == ItemType.Equipabble && InventoryManager.Instance.GetEquipmentSlot(itemData.slotType) == -1){
+            Debug.Log("No");
+        }
+        else
+        {
+            InventoryManager.Instance.UseItem(itemData);
+            itemIcon.sprite = null;
+            itemIcon.enabled = false;
+            itemData = null;
+        }
     }
 
     public bool HasItem()
